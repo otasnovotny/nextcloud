@@ -1,0 +1,67 @@
+version: '3.5'
+
+volumes:
+  nextcloud:
+  db:
+
+services:
+  db:
+    image: mariadb:lts
+    restart: always
+    command: --transaction-isolation=READ-COMMITTED --log-bin=binlog --binlog-format=ROW
+    volumes:
+      - db:/var/lib/mysql
+    env_file:
+      - db.env
+
+  redis:
+    image: redis:alpine
+    restart: always
+
+  app:
+    image: nextcloud
+    restart: always
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=db
+      - REDIS_HOST=redis
+      # solves security issues of nextloud
+      - TRUSTED_PROXIES=172.22.0.0/24
+      - NEXTCLOUD_TRUSTED_DOMAINS=nextcloud.otasovo.cz
+      - OVERWRITEHOST=nextcloud.otasovo.cz
+      - OVERWRITEPROTOCOL=https
+      - OVERWRITECLIURL=https://nextcloud.otasovo.cz
+    env_file:
+      - db.env
+    labels:
+      - "traefik.http.routers.nextcloud.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.otasovo.cz`)"
+      - "traefik.http.routers.nextcloud.tls=true"
+      - "traefik.http.routers.nextcloud.tls.certresolver=default"
+
+      # solves security issues of nextloud
+      - "traefik.http.middlewares.nextcloud.headers.STSSeconds=15552000"
+      - "traefik.http.middlewares.nextcloud.headers.framedeny=true"
+      - "traefik.http.middlewares.nextcloud.headers.browserxssfilter=true"
+      - "traefik.http.routers.nextcloud.middlewares=servicests,nextcloud-dav"
+      - "traefik.http.middlewares.servicests.headers.stspreload=true"
+      - "traefik.http.middlewares.servicests.headers.stsseconds=31536000"
+      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
+      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.replacement=/remote.php/dav/"
+
+  cron:
+    image: nextcloud
+    restart: always
+    volumes:
+      - nextcloud:/var/www/html
+    entrypoint: /cron.sh
+    depends_on:
+      - db
+    env_file:
+      - db.env
+    environment:
+      - MYSQL_HOST=db
