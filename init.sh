@@ -13,6 +13,8 @@ sudo rm ~/html/nextcloud-init-sync.lock
 
 # set default region
 docker exec --user www-data nextcloud-app-1 php occ config:system:set default_phone_region --value="CZ"
+# OR
+docker compose exec -it --user www-data app php occ config:system:set default_phone_region --value="CZ"
 
 # Server has no maintenance window start time configured. This means resource intensive daily background jobs will also
 # be executed during your main usage time. We recommend to set it to a time of low usage, so users are less impacted by
@@ -35,4 +37,10 @@ docker exec --user www-data nextcloud-app-1 php occ maintenance:repair --include
 # not done automatically during upgrades. Once the indices are added, queries to those tables should be faster.
 # Use the command `occ db:add-missing-indices` to add them. Missing indices: "systag_by_objectid" in table
 # "systemtag_object_mapping". For more details see the documentation ↗.
-docker exec --user www-data nextcloud-app-1 php occ db:add-missing-indices
+docker compose exec -it --user www-data app php occ db:add-missing-indices
+
+# Logs in https://nextcloud.otasovo.cz/settings/admin/logging
+docker compose exec -it --user www-data app rm ./data/nextcloud.log
+
+# Warnings and errors in log
+# - Remove / Disable apps: UsageSurvey, Whiteboard
