@@ -10,7 +10,7 @@ services:
     volumes:
       - db:/var/lib/mysql
     env_file:
-      - db.env
+      - .env
 
   redis:
     image: redis:alpine
@@ -34,25 +34,30 @@ services:
       - OVERWRITEPROTOCOL=https
       - OVERWRITECLIURL=https://nextcloud.otasovo.cz
     env_file:
-      - db.env
+      - .env
     labels:
       - "traefik.http.routers.nextcloud.entrypoints=websecure"
       - "traefik.http.routers.nextcloud.rule=Host(`nextcloud.otasovo.cz`)"
       - "traefik.http.routers.nextcloud.tls=true"
       - "traefik.http.routers.nextcloud.tls.certresolver=default"
 
-      # solves security issues of nextloud
-#      - "traefik.http.middlewares.nextcloud.headers.framedeny=true"
-#      - "traefik.http.middlewares.nextcloud.headers.browserxssfilter=true"
+#      # solves security issues of nextloud
+##      - "traefik.http.middlewares.nextcloud.headers.framedeny=true"
+##      - "traefik.http.middlewares.nextcloud.headers.browserxssfilter=true"
+#
+##      - "traefik.http.routers.nextcloud.middlewares=servicests,nextcloud-dav"
 
-#      - "traefik.http.routers.nextcloud.middlewares=servicests,nextcloud-dav"
+      # Solves Security & setup warning:
+      # Some headers are not set correctly on your instance - The `Strict-Transport-Security` HTTP header is not set
+      # (should be at least `15552000` seconds). For enhanced security, it is recommended to enable HSTS.
+      # For more details see the documentation ↗.
       - "traefik.http.routers.nextcloud.middlewares=servicests"
       - "traefik.http.middlewares.servicests.headers.stspreload=true"
       - "traefik.http.middlewares.servicests.headers.stsseconds=31536000"
-
-# new nextcloud works fine without it
-#      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
-#      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.replacement=/remote.php/dav/"
+#
+## new nextcloud works fine without it
+##      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.regex=^/.well-known/ca(l|rd)dav"
+##      - "traefik.http.middlewares.nextcloud-dav.replacepathregex.replacement=/remote.php/dav/"
 
   cron:
     image: nextcloud
@@ -63,6 +68,6 @@ services:
     depends_on:
       - db
     env_file:
-      - db.env
+      - .env
     environment:
       - MYSQL_HOST=db
