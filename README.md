@@ -96,4 +96,7 @@ Click `Send email` to check if your settings work.
 docker compose exec -it --user www-data app rm ./data/nextcloud.log
 ```
 
-Go to https://scan.nextcloud.com/ and check your nextcloud instance https://nextcloud.example.com. 
+Go to https://scan.nextcloud.com/ and check your nextcloud instance https://nextcloud.example.com.
+
+# Client
+https://docs.nextcloud.com/desktop/latest/advancedusage.html#install-nextcloudcmd
