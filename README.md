@@ -98,5 +98,14 @@ docker compose exec -it --user www-data app rm ./data/nextcloud.log
 
 Go to https://scan.nextcloud.com/ and check your nextcloud instance https://nextcloud.example.com.
 
-# Client
-https://docs.nextcloud.com/desktop/latest/advancedusage.html#install-nextcloudcmd
+## Client
+
+### Desktop
+Install [Nextcloud client](https://nextcloud.com/install/#install-clients) to sync files.
+
+Your contacts and calendar url: https://nextcloud.example.com/remote.php/dav/ 
+
+### Mobile device
+Enable `Calendar app` and `Contacts app` in your Nextcloud https://nextcloud.example.com/settings/apps/enabled.
+
+Install [Davx5](https://www.davx5.com/) to sync Calendar and Contacts on your mobile dievice.
