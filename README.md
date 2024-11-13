@@ -2,6 +2,9 @@
 
 This is a guide how to run [Nextcloud](https://nextcloud.com/) behind [Traefik](https://traefik.io/traefik/).
 
+If you don't know how to setup Traefik, check out my example of 
+[Traefik setup](https://github.com/otasnovotny/traefik).
+
 Doc: https://docs.nextcloud.com/server/latest/admin_manual/installation/index.html
 
 ## Server
